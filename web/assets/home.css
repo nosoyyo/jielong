@@ -1,0 +1,33 @@
+#main {
+    width: 100%;
+    margin: 30px;
+}
+
+#room-info {
+    height: 200px;
+    width: 100%;
+}
+
+#online-list {
+    width: 25%;
+}
+
+
+#msg-list {
+    height: 20%;
+    min-height: 200px;
+    width: 75%;
+}
+
+#msg-form {
+    width: 100%;
+}
+
+#msg-sender {
+    height: 120px;
+    width: 240px;
+}
+
+#messageText {
+    height: 120px;
+}

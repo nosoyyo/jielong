@@ -1,14 +1,15 @@
 import uvicorn
 from starlette.applications import Starlette
+from starlette.responses import HTMLResponse
 from starlette.authentication import requires
 from starlette.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import HTMLResponse, Response
 from starlette.endpoints import WebSocketEndpoint, HTTPEndpoint
 from starlette.middleware.authentication import AuthenticationMiddleware
 
 from handlers import handlers
 from auth import BasicAuthBackend
+from config import WS_HOST_PORT
 
 
 app = Starlette(debug=True, template_directory='templates')
@@ -49,7 +50,6 @@ class Endpoint(HTTPEndpoint):
         resp = handler(query_params=qp,
                        form=form,
                        )
-        assert isinstance(resp, Response)
         return resp
 
 
@@ -63,14 +63,28 @@ class Home(HTTPEndpoint):
             username = request.cookies['test_cookies']
         except KeyError:
             pass
+
+        props = {}
+        props['username'] = username
+        props['WS_HOST_PORT'] = WS_HOST_PORT
+
         template = app.get_template('home.html')
-        content = template.render(request=request, username=username)
+        content = template.render(request=request, props=props)
         resp = HTMLResponse(content)
-        resp.set_cookie('test_cookies', username, expires=86400)
+        resp.set_cookie('member', username, expires=86400)
         return resp
 
 
-@app.websocket_route("/ws")
+@app.route("/me")
+@requires(['authenticated', 'guest'], redirect='/')
+class Me(HTTPEndpoint):
+    async def get(self, request):
+        # TODO
+        pass
+        return
+
+
+@app.websocket_route("/")
 class Broadcast(WebSocketEndpoint):
 
     encoding = "text"
@@ -89,6 +103,9 @@ class Broadcast(WebSocketEndpoint):
     async def on_receive(self, ws, data):
         self.update_sess_data(ws, data)
         await self.broadcast_message(data)
+
+    async def on_disconnect(self, websocket, close_code):
+        self.sessions
 
 
 if __name__ == "__main__":

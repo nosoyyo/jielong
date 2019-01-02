@@ -27,3 +27,13 @@ class BasicAuthBackend(AuthenticationBackend):
         #       possibly by installing `DatabaseMiddleware`
         #       and retrieving user information from `request.database`.
         return AuthCredentials(["authenticated"]), User(username)
+
+
+class CookiesValidation():
+    async def validate(self, token):
+        # TODO
+        pass
+
+    async def genTokenByPwdMD5(self, md5):
+        # TODO
+        pass
