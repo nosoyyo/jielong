@@ -17,6 +17,7 @@
     height: 20%;
     min-height: 200px;
     width: 75%;
+    overflow: scroll;
 }
 
 #msg-form {

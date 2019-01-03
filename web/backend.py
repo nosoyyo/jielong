@@ -93,7 +93,6 @@ class Broadcast(WebSocketEndpoint):
     def update_sess_data(self, ws, data):
         session_key = ws.headers.get('sec-websocket-key', 'last')
         self.sessions[session_key] = ws
-        print(self.sessions)
 
     async def broadcast_message(self, msg):
         for k in self.sessions:
@@ -104,8 +103,9 @@ class Broadcast(WebSocketEndpoint):
         self.update_sess_data(ws, data)
         await self.broadcast_message(data)
 
-    async def on_disconnect(self, websocket, close_code):
-        self.sessions
+    async def on_disconnect(self, ws, close_code):
+        session_key = ws.headers.get('sec-websocket-key', 'last')
+        self.sessions.pop(session_key)
 
 
 if __name__ == "__main__":
